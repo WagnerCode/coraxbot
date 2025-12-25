@@ -1,0 +1,216 @@
+<!-- <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            color: var(--tg-theme-text-color);
+            background: var(--tg-theme-bg-color);
+        }
+
+        .Main {
+            width: 100%;
+            padding: 25px;
+            text-align: center;
+
+        }
+
+        h1 {
+            margin-top: 40px;
+            margin-bottom: 10px;
+        }
+
+        img {
+            width: 70px;
+            margin: 30px auto;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 5px;
+            margin-top: 50px;
+            height: 60px;
+            width: 200px;
+            font-style: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--tg-theme-button-text-color);
+            background: var(--tg-theme-button-color);
+        }
+
+        form {
+            display: none;
+            text-align: center;
+        }
+        
+        input {
+            outline: none;
+            border-radius: 5px;
+            border: 2px solid #535353;
+            padding: 15px 10px;
+            margin: 10px 0 0;
+            background: var(--tg-theme-section-separator-color);
+            color: var(--tg-theme-text-color);
+            transition: all .2s;
+        }
+        
+        input:focus {
+            border-color: var(--tg-theme-secondary-bg-color)
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="Main">
+        <h1>Тестовое приложение</h1>
+        <img src="{{ url_for('static', filename='bot.png') }}" alt="">
+        <p></p>
+        <button class="btn f-btn">Тест отправки данных</button>
+    </div>
+    <form class="test-form">    
+        <input type="text" placeholder="Введите заголовок" class="title-inp">
+        <input type="text" placeholder="Введите описание" class="desc-inp">
+        <input type="text" placeholder="Введите текст" class="text-inp">
+        <button class="btn s-btn">Отправить</button>
+    </form>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+
+        let fBtn = document.getElementsByClassName("f-btn")[0]
+        let sBtn = document.getElementsByClassName("s-btn")[0]
+
+        fBtn.addEventListener("click", () => {
+            document.getElementsByClassName("Main")[0].style.display = "none";
+            document.getElementsByClassName("test-form")[0].style.display = "block";
+        });
+
+        sBtn.addEventListener("click", () => {
+            let title = document.getElementsByClassName("title-inp")[0];
+            let description = document.getElementsByClassName("desc-inp")[0];
+            let text = document.getElementsByClassName("text-inp")[0];
+
+            
+            let data = {
+                title: title.value,
+                desc: description.value,    
+                text: text.value
+            }
+
+            tg.sendData(JSON.stringify(data));
+        });
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            color: var(--tg-theme-text-color);
+            background: var(--tg-theme-bg-color);
+            font-family: Arial, sans-serif;
+        }
+        .Main { width: 100%; padding: 25px; text-align: center; }
+        h1 { margin-top: 40px; margin-bottom: 10px; }
+        img { width: 70px; margin: 30px auto; }
+        .btn {
+            border: 0; border-radius: 5px; margin-top: 20px;
+            height: 48px; width: 220px; font-size: 16px; font-weight: 600;
+            cursor: pointer; color: var(--tg-theme-button-text-color);
+            background: var(--tg-theme-button-color);
+        }
+        form { text-align: center; }
+        input {
+            outline: none; border-radius: 5px; border: 2px solid #535353;
+            padding: 12px 10px; margin: 10px 0 0; width: 100%;
+            background: var(--tg-theme-section-separator-color);
+            color: var(--tg-theme-text-color); transition: all .2s;
+        }
+        input:focus { border-color: var(--tg-theme-secondary-bg-color) }
+        .card { max-width: 360px; margin: 0 auto; padding: 24px; }
+        .alert { margin: 12px auto; max-width: 360px; padding: 10px 14px; border-radius: 6px; }
+        .alert.success { background: #d1fae5; color: #065f46; }
+        .alert.error { background: #fee2e2; color: #991b1b; }
+        .alert.info { background: #e0f2fe; color: #075985; }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="alert {{ category }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if not is_authed %}
+      <div class="Main">
+        <h1>Вход</h1>
+        <div class="card">
+          <form action="/login" method="POST">
+            <input name="login" type="text" placeholder="Логин" required>
+            <input name="password" type="password" placeholder="Пароль" required>
+            <button class="btn" type="submit">Войти</button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <div class="Main">
+        <h1>Тестовое приложение</h1>
+        <img src="{{ url_for('static', filename='bot.png') }}" alt="">
+        <p></p>
+        <button class="btn f-btn" type="button">Тест отправки данных</button>
+        <form action="/logout" method="POST" style="margin-top:20px;">
+          <button class="btn" type="submit" style="background:#444;">Выйти</button>
+        </form>
+      </div>
+
+      <form class="test-form" style="display:none; padding: 0 25px;">
+        <input type="text" placeholder="Введите заголовок" class="title-inp">
+        <input type="text" placeholder="Введите описание" class="desc-inp">
+        <input type="text" placeholder="Введите текст" class="text-inp">
+        <button class="btn s-btn" type="button">Отправить</button>
+      </form>
+
+      <script src="https://telegram.org/js/telegram-web-app.js"></script>
+      <script>
+        const tg = window.Telegram.WebApp;
+        const mainBlock = document.getElementsByClassName("Main")[0];
+        const formBlock = document.getElementsByClassName("test-form")[0];
+        const fBtn = document.getElementsByClassName("f-btn")[0];
+        const sBtn = document.getElementsByClassName("s-btn")[0];
+
+        fBtn.addEventListener("click", () => {
+            mainBlock.style.display = "none";
+            formBlock.style.display = "block";
+        });
+
+        sBtn.addEventListener("click", () => {
+            const title = document.getElementsByClassName("title-inp")[0].value.trim();
+            const description = document.getElementsByClassName("desc-inp")[0].value.trim();
+            const text = document.getElementsByClassName("text-inp")[0].value.trim();
+
+            const data = { title, desc: description, text };
+            tg.sendData(JSON.stringify(data));
+        });
+      </script>
+    {% endif %}
+</body>
+</html>
