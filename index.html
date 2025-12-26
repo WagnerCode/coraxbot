@@ -423,6 +423,12 @@
             color: #2563eb;
         }
 
+        .helper-text {
+            color: var(--tg-theme-hint-color);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
         .alert-icon {
             font-size: 18px;
             flex-shrink: 0;
@@ -530,6 +536,18 @@
                     <div class="choice-title">Corax</div>
                     <div class="choice-desc">Кластер</div>
                 </div>
+            </div>
+
+            <div class="card" id="externalRedirectCard">
+                <h1 style="font-size:20px;margin-bottom:8px;text-align:left">Проверка внешней ссылки</h1>
+                <p class="helper-text">Откройте внешний URL внутри текущей сессии мини-приложения.</p>
+                <div class="form-group">
+                    <label class="form-label" for="externalUrl">Внешний URL</label>
+                    <input id="externalUrl" type="url" class="input-field external-url-input" placeholder="https://example.com" inputmode="url" autocomplete="off">
+                </div>
+                <button class="btn btn-primary open-external-btn" type="button">
+                    <span class="btn-icon">↗</span> Открыть в Mini App
+                </button>
             </div>
 
             <div class="logout-container">
@@ -655,6 +673,31 @@
                 
                 // Show confirmation
                 tg.showAlert(`Запрос на создание ВМ отправлен!\n\nСервис: ${choice}\nКонфигурация: ${flavor}\nПодсеть: ${subnet}`);
+            });
+
+            // External redirect tester
+            const externalBtn = document.querySelector('.open-external-btn');
+            const externalInput = document.querySelector('.external-url-input');
+
+            externalBtn?.addEventListener('click', () => {
+                const rawUrl = externalInput?.value.trim() || "";
+
+                if (!rawUrl) {
+                    tg.showAlert("Введите ссылку, которую нужно открыть");
+                    return;
+                }
+
+                if (!/^https?:\/\//i.test(rawUrl)) {
+                    tg.showAlert("URL должен начинаться с http:// или https://");
+                    return;
+                }
+
+                try {
+                    const target = new URL(rawUrl);
+                    window.location.href = target.toString();
+                } catch (e) {
+                    tg.showAlert("Некорректный URL");
+                }
             });
             
             // Input animations
