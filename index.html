@@ -429,6 +429,12 @@
             margin-bottom: 8px;
         }
 
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
         .alert-icon {
             font-size: 18px;
             flex-shrink: 0;
@@ -539,11 +545,11 @@
             </div>
 
             <div class="card" id="externalRedirectCard">
-                <h1 style="font-size:20px;margin-bottom:8px;text-align:left">Проверка внешней ссылки</h1>
-                <p class="helper-text">Откройте внешний URL внутри текущей сессии мини-приложения.</p>
+                <h3 class="card-title">Проверка внешней ссылки</h3>
+                <p id="externalHelp" class="helper-text">Откройте внешний URL внутри текущей сессии мини-приложения.</p>
                 <div class="form-group">
                     <label class="form-label" for="externalUrl">Внешний URL</label>
-                    <input id="externalUrl" type="url" class="input-field external-url-input" placeholder="https://example.com" inputmode="url" autocomplete="off">
+                    <input id="externalUrl" type="url" class="input-field external-url-input" placeholder="https://example.com" inputmode="url" autocomplete="off" aria-describedby="externalHelp" required>
                 </div>
                 <button class="btn btn-primary open-external-btn" type="button">
                     <span class="btn-icon">↗</span> Открыть в Mini App
@@ -678,25 +684,47 @@
             // External redirect tester
             const externalBtn = document.querySelector('.open-external-btn');
             const externalInput = document.querySelector('.external-url-input');
+            const allowedProtocols = ["http:", "https:"];
 
-            externalBtn?.addEventListener('click', () => {
-                const rawUrl = externalInput?.value.trim() || "";
-
-                if (!rawUrl) {
-                    tg.showAlert("Введите ссылку, которую нужно открыть");
+            const handleExternalOpen = () => {
+                if (!externalInput) {
                     return;
                 }
 
-                if (!/^https?:\/\//i.test(rawUrl)) {
-                    tg.showAlert("URL должен начинаться с http:// или https://");
+                const rawUrl = externalInput.value.trim();
+                const markInvalid = (message) => {
+                    externalInput.setAttribute('aria-invalid', 'true');
+                    externalInput.focus();
+                    tg.showAlert(message);
+                };
+
+                const clearInvalid = () => {
+                    externalInput.setAttribute('aria-invalid', 'false');
+                };
+
+                if (!rawUrl) {
+                    markInvalid("Введите ссылку, которую нужно открыть");
                     return;
                 }
 
                 try {
                     const target = new URL(rawUrl);
-                    window.location.href = target.toString();
+                    if (!allowedProtocols.includes(target.protocol)) {
+                        markInvalid("URL должен начинаться с http:// или https://");
+                        return;
+                    }
+                    clearInvalid();
+                    tg.openLink(target.toString());
                 } catch (e) {
-                    tg.showAlert("Некорректный URL");
+                    markInvalid("Некорректный URL");
+                }
+            };
+
+            externalBtn?.addEventListener('click', handleExternalOpen);
+            externalInput?.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleExternalOpen();
                 }
             });
             
