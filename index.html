@@ -1,138 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini App</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            color: var(--tg-theme-text-color);
-            background: var(--tg-theme-bg-color);
-            font-family: Arial, sans-serif;
-        }
-        .Main { width: 100%; padding: 25px; text-align: center; }
-        h1 { margin-top: 24px; margin-bottom: 8px; }
-        img { width: 70px; margin: 24px auto; }
-        .btn {
-            border: 0; border-radius: 6px; margin-top: 16px;
-            height: 48px; width: 220px; font-size: 16px; font-weight: 600;
-            cursor: pointer; color: var(--tg-theme-button-text-color);
-            background: var(--tg-theme-button-color);
-        }
-        form { text-align: center; }
-        input, select {
-            outline: none; border-radius: 6px; border: 2px solid #535353;
-            padding: 12px 10px; margin: 10px 0 0; width: 100%;
-            background: var(--tg-theme-section-separator-color);
-            color: var(--tg-theme-text-color); transition: all .2s;
-        }
-        input:focus, select:focus { border-color: var(--tg-theme-secondary-bg-color) }
-        .card { max-width: 380px; margin: 0 auto; padding: 20px; }
-        .alert { margin: 12px auto; max-width: 360px; padding: 10px 14px; border-radius: 6px; }
-        .alert.success { background: #d1fae5; color: #065f46; }
-        .alert.error { background: #fee2e2; color: #991b1b; }
-        .alert.info { background: #e0f2fe; color: #075985; }
-        .choice-buttons { display: grid; gap: 12px; margin-top: 18px; }
-        .hidden { display: none; }
-    </style>
-</head>
-<body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, msg in messages %}
-          <div class="alert {{ category }}">{{ msg }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    {% if not is_authed %}
-      <div class="Main">
-        <h1>Вход</h1>
-        <div class="card">
-          <form action="/login" method="POST">
-            <input name="login" type="text" placeholder="Логин" required>
-            <input name="password" type="password" placeholder="Пароль" required>
-            <button class="btn" type="submit">Войти</button>
-          </form>
-        </div>
-      </div>
-    {% else %}
-      <div class="Main">
-        <h1>Выбор приложения</h1>
-        <img src="{{ url_for('static', filename='bot.png') }}" alt="">
-        <div class="choice-buttons">
-          <button class="btn choice-btn" data-choice="Pangolin" type="button">Pangolin</button>
-          <button class="btn choice-btn" data-choice="Corax" type="button">Corax</button>
-        </div>
-        <form action="/logout" method="POST" style="margin-top:20px;">
-          <button class="btn" type="submit" style="background:#444;">Выйти</button>
-        </form>
-      </div>
-
-      <form class="test-form hidden" style="padding: 0 25px;">
-        <h1 style="text-align:center;">Отправка данных</h1>
-        <input type="hidden" class="choice-hidden" value="">
-        <select class="subnet-select" required>
-          <option value="" disabled selected>Выберите подсеть</option>
-          <option value="10.10.10.0/24">10.10.10.0/24</option>
-          <option value="172.0.0.0/24">172.0.0.0/24</option>
-          <option value="192.0.0.0/24">192.0.0.0/24</option>
-        </select>
-        <select class="flavor-select" required>
-          <option value="" disabled selected>Выберите флейвор ВМ</option>
-          <option value="2/4 30%">2/4 30%</option>
-          <option value="4/8 30%">4/8 30%</option>
-          <option value="8/16 30%">8/16 30%</option>
-        </select>
-        <input type="text" placeholder="Введите заголовок" class="title-inp">
-        <input type="text" placeholder="Введите описание" class="desc-inp">
-        <input type="text" placeholder="Введите текст" class="text-inp">
-        <button class="btn s-btn" type="button">Отправить</button>
-      </form>
-
-      <script src="https://telegram.org/js/telegram-web-app.js"></script>
-      <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // better viewport for mini app
-
-        const mainBlock = document.getElementsByClassName("Main")[0];
-        const formBlock = document.getElementsByClassName("test-form")[0];
-        const choiceButtons = document.querySelectorAll(".choice-btn");
-        const choiceHidden = document.querySelector(".choice-hidden");
-        const sendBtn = document.querySelector(".s-btn");
-
-        choiceButtons.forEach(btn => {
-          btn.addEventListener("click", () => {
-            const val = btn.dataset.choice;
-            choiceHidden.value = val;
-            mainBlock.classList.add("hidden");
-            formBlock.classList.remove("hidden");
-          });
-        });
-
-        sendBtn.addEventListener("click", () => {
-          const title = document.querySelector(".title-inp").value.trim();
-          const description = document.querySelector(".desc-inp").value.trim();
-          const text = document.querySelector(".text-inp").value.trim();
-          const subnet = document.querySelector(".subnet-select").value;
-          const flavor = document.querySelector(".flavor-select").value;
-          const choice = choiceHidden.value || "Не выбрано";
-
-          if (!subnet || !flavor) {
-            tg.showAlert("Выберите подсеть и флейвор ВМ");
-            return;
-          }
-
-          const data = { choice, title, desc: description, text, subnet, flavor };
-          tg.sendData(JSON.stringify(data));
-        });
-      </script>
-    {% endif %}
-</body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -327,10 +192,59 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
+        .btn-vk {
+            background: linear-gradient(135deg, #0077FF, #005ACC);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 119, 255, 0.3);
+        }
+
+        .btn-vk:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 6px rgba(0, 119, 255, 0.2);
+        }
+
+        .btn-esia {
+            background: linear-gradient(135deg, #0D4CD3, #0A3CA6);
+            color: white;
+            box-shadow: 0 4px 12px rgba(13, 76, 211, 0.3);
+        }
+
+        .btn-esia:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 6px rgba(13, 76, 211, 0.2);
+        }
+
         .btn-icon {
             font-size: 18px;
             display: flex;
             align-items: center;
+        }
+
+        .oauth-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: var(--spacing-md) 0;
+            color: var(--tg-theme-hint-color);
+            font-size: 14px;
+        }
+
+        .oauth-divider::before,
+        .oauth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .oauth-divider span {
+            padding: 0 var(--spacing-sm);
+        }
+
+        .oauth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
         }
 
         .choice-grid {
@@ -436,7 +350,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .page-transition {
@@ -454,6 +368,116 @@
             margin-top: var(--spacing-md);
             padding-top: var(--spacing-md);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* OAuth Modal/Iframe styles */
+        .oauth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-md);
+        }
+        
+        .oauth-modal:not(.hidden) {
+            display: flex; /* Show when not hidden */
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .oauth-modal-content {
+            background: var(--tg-theme-bg-color);
+            border-radius: var(--border-radius-lg);
+            width: 100%;
+            max-width: 440px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .oauth-modal-header {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .oauth-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .oauth-modal-close {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--tg-theme-text-color);
+            font-size: 20px;
+            transition: var(--transition);
+        }
+
+        .oauth-modal-close:active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(0.95);
+        }
+
+        .oauth-modal-body {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .oauth-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+        }
+
+        .oauth-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--tg-theme-link-color, #4a6cf7);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         @media (prefers-reduced-motion: no-preference) {
@@ -497,6 +521,32 @@
         </div>
 
         <div class="card page-transition active">
+            <!-- OAuth Buttons First -->
+            <div class="oauth-buttons">
+                <button class="btn btn-vk" type="button" id="vkAuthBtn">
+                    <span class="btn-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z"/>
+                        </svg>
+                    </span>
+                    Войти через VK ID
+                </button>
+
+                <button class="btn btn-esia" type="button" id="esiaAuthBtn">
+                    <span class="btn-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"/>
+                        </svg>
+                    </span>
+                    Войти через Госуслуги
+                </button>
+            </div>
+
+            <div class="oauth-divider">
+                <span>или используйте логин</span>
+            </div>
+
+            <!-- Traditional Login Form -->
             <form action="/login" method="POST">
                 <div class="form-group">
                     <label class="form-label" for="login">Логин</label>
@@ -589,6 +639,23 @@
         {% endif %}
     </div>
 
+    <!-- OAuth Modal Template -->
+    <div id="oauthModal" class="oauth-modal hidden">
+        <div class="oauth-modal-content">
+            <div class="oauth-modal-header">
+                <div class="oauth-modal-title" id="oauthModalTitle">Авторизация</div>
+                <button class="oauth-modal-close" id="oauthModalClose">×</button>
+            </div>
+            <div class="oauth-modal-body">
+                <div class="oauth-loading" id="oauthLoading">
+                    <div class="spinner"></div>
+                    <div style="margin-top: 12px; color: var(--tg-theme-hint-color);">Загрузка...</div>
+                </div>
+                <iframe id="oauthIframe" class="oauth-iframe hidden"></iframe>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const tg = window.Telegram.WebApp;
@@ -598,6 +665,224 @@
             // Set theme colors
             document.documentElement.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color || '#4a6cf7');
             
+            // OAuth Modal Management
+            const oauthModal = document.getElementById('oauthModal');
+            const oauthIframe = document.getElementById('oauthIframe');
+            const oauthLoading = document.getElementById('oauthLoading');
+            const oauthModalClose = document.getElementById('oauthModalClose');
+            const oauthModalTitle = document.getElementById('oauthModalTitle');
+
+            // Ensure modal is hidden on load
+            if (oauthModal) {
+                oauthModal.classList.add('hidden');
+                oauthModal.style.display = 'none';
+            }
+
+            let iframeLoadTimeout = null;
+
+            function showOAuthModal(title, iframeUrl) {
+                if (!oauthModal) return;
+                
+                oauthModalTitle.textContent = title;
+                oauthModal.style.display = 'flex';
+                oauthModal.classList.remove('hidden');
+                oauthLoading.classList.remove('hidden');
+                oauthIframe.classList.add('hidden');
+                oauthIframe.src = iframeUrl;
+                
+                // Set timeout for iframe loading (30 seconds)
+                if (iframeLoadTimeout) clearTimeout(iframeLoadTimeout);
+                iframeLoadTimeout = setTimeout(() => {
+                    if (!oauthIframe.classList.contains('hidden')) {
+                        return; // Already loaded
+                    }
+                    console.error('OAuth iframe load timeout');
+                    hideOAuthModal();
+                    tg.showAlert('Превышено время ожидания загрузки. Попробуйте еще раз.');
+                }, 30000);
+                
+                console.log('OAuth modal opened:', title);
+            }
+
+            function hideOAuthModal() {
+                if (!oauthModal) return;
+                
+                if (iframeLoadTimeout) {
+                    clearTimeout(iframeLoadTimeout);
+                    iframeLoadTimeout = null;
+                }
+                
+                oauthModal.classList.add('hidden');
+                oauthModal.style.display = 'none';
+                oauthIframe.src = '';
+                oauthLoading.classList.remove('hidden');
+                oauthIframe.classList.add('hidden');
+                
+                console.log('OAuth modal closed');
+            }
+
+            // OAuth iframe load handler
+            if (oauthIframe) {
+                oauthIframe.addEventListener('load', () => {
+                    // Only hide loading if iframe has a source
+                    if (oauthIframe.src && oauthIframe.src !== 'about:blank' && oauthIframe.src !== '') {
+                        if (iframeLoadTimeout) {
+                            clearTimeout(iframeLoadTimeout);
+                            iframeLoadTimeout = null;
+                        }
+                        oauthLoading.classList.add('hidden');
+                        oauthIframe.classList.remove('hidden');
+                        console.log('OAuth iframe loaded successfully');
+                    }
+                });
+                
+                oauthIframe.addEventListener('error', (e) => {
+                    console.error('OAuth iframe error:', e);
+                    hideOAuthModal();
+                    tg.showAlert('Ошибка загрузки формы авторизации');
+                });
+            }
+
+            // Close button handler
+            if (oauthModalClose) {
+                oauthModalClose.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    hideOAuthModal();
+                    console.log('Close button clicked');
+                });
+            }
+
+            // Click outside modal to close
+            if (oauthModal) {
+                oauthModal.addEventListener('click', (e) => {
+                    if (e.target === oauthModal) {
+                        hideOAuthModal();
+                        console.log('Clicked outside modal');
+                    }
+                });
+            }
+
+            // ESC key to close modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && oauthModal && !oauthModal.classList.contains('hidden')) {
+                    hideOAuthModal();
+                }
+            });
+
+            // VK OAuth
+            const vkAuthBtn = document.getElementById('vkAuthBtn');
+            if (vkAuthBtn) {
+                vkAuthBtn.addEventListener('click', async () => {
+                    console.log('VK Auth button clicked');
+                    try {
+                        const response = await fetch('/oauth/vk/init', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Server error: ' + response.status);
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (data.success && data.iframe_url) {
+                            showOAuthModal('Вход через VK ID', data.iframe_url);
+                        } else {
+                            tg.showAlert('Ошибка инициализации VK OAuth');
+                        }
+                    } catch (error) {
+                        console.error('VK OAuth error:', error);
+                        tg.showAlert('Ошибка подключения к VK: ' + error.message);
+                    }
+                });
+            }
+
+            // ESIA OAuth
+            const esiaAuthBtn = document.getElementById('esiaAuthBtn');
+            if (esiaAuthBtn) {
+                esiaAuthBtn.addEventListener('click', async () => {
+                    console.log('ESIA Auth button clicked');
+                    try {
+                        const response = await fetch('/oauth/esia/init', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Server error: ' + response.status);
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (data.success && data.iframe_url) {
+                            showOAuthModal('Вход через Госуслуги', data.iframe_url);
+                        } else {
+                            tg.showAlert('Ошибка инициализации Госуслуги OAuth');
+                        }
+                    } catch (error) {
+                        console.error('ESIA OAuth error:', error);
+                        tg.showAlert('Ошибка подключения к Госуслугам: ' + error.message);
+                    }
+                });
+            }
+
+            // Listen for postMessage from OAuth iframe (VK ID sends tokens this way)
+            window.addEventListener('message', async (event) => {
+                console.log('Received postMessage from:', event.origin, event.data);
+                
+                // Security: verify origin
+                const allowedOrigins = ['https://id.vk.com', 'https://esia-portal1.test.gosuslugi.ru'];
+                if (!allowedOrigins.includes(event.origin)) {
+                    console.log('Ignored message from untrusted origin:', event.origin);
+                    return;
+                }
+
+                // Handle VK ID response
+                if (event.data.type === 'VKWebAppGetAuthTokenResult' || event.data.payload?.token) {
+                    const token = event.data.payload?.token || event.data.token;
+                    const uuid = event.data.uuid || event.data.payload?.uuid;
+                    
+                    console.log('VK token received, exchanging...');
+                    
+                    try {
+                        const response = await fetch('/oauth/vk/exchange', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ token, uuid })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Exchange failed: ' + response.status);
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            hideOAuthModal();
+                            tg.showAlert('Успешная авторизация через VK ID');
+                            setTimeout(() => window.location.reload(), 1000);
+                        } else {
+                            hideOAuthModal();
+                            tg.showAlert('Ошибка авторизации: ' + (data.error || 'Unknown error'));
+                        }
+                    } catch (error) {
+                        console.error('Token exchange error:', error);
+                        hideOAuthModal();
+                        tg.showAlert('Ошибка обработки токена: ' + error.message);
+                    }
+                }
+
+                // Handle ESIA response (if they use postMessage)
+                if (event.data.type === 'esia_success' || event.data.code) {
+                    console.log('ESIA auth successful');
+                    hideOAuthModal();
+                    tg.showAlert('Успешная авторизация через Госуслуги');
+                    setTimeout(() => window.location.reload(), 1000);
+                }
+            });
+
             // Page transitions
             const mainSection = document.getElementById('mainSection');
             const formSection = document.getElementById('formSection');
