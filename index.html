@@ -214,6 +214,17 @@
             box-shadow: 0 2px 6px rgba(13, 76, 211, 0.2);
         }
 
+        .btn-keycloak {
+            background: linear-gradient(135deg, #4A90D9, #2E6EB5);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 144, 217, 0.3);
+        }
+
+        .btn-keycloak:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 6px rgba(74, 144, 217, 0.2);
+        }
+
         .btn-icon {
             font-size: 18px;
             display: flex;
@@ -370,110 +381,16 @@
             border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* OAuth Modal/Iframe styles */
-        .oauth-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: none; /* Hidden by default */
-            align-items: center;
-            justify-content: center;
-            padding: var(--spacing-md);
-        }
-        
-        .oauth-modal:not(.hidden) {
-            display: flex; /* Show when not hidden */
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .oauth-modal-content {
-            background: var(--tg-theme-bg-color);
-            border-radius: var(--border-radius-lg);
-            width: 100%;
-            max-width: 440px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .oauth-modal-header {
-            padding: var(--spacing-md);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .oauth-modal-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .oauth-modal-close {
-            background: rgba(255, 255, 255, 0.08);
-            border: none;
-            border-radius: 8px;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--tg-theme-text-color);
-            font-size: 20px;
-            transition: var(--transition);
-        }
-
-        .oauth-modal-close:active {
-            background: rgba(255, 255, 255, 0.15);
-            transform: scale(0.95);
-        }
-
-        .oauth-modal-body {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .oauth-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
-        }
-
-        .oauth-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
+        /* Loading spinner for button states */
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color: var(--tg-theme-link-color, #4a6cf7);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
         }
 
         @keyframes spin {
@@ -491,61 +408,6 @@
                 backdrop-filter: blur(12px);
                 background: rgba(30, 30, 30, 0.6);
             }
-        }
-
-        /* VK One Tap Auth iframe styles */
-        .vk-one-tap-container {
-            position: relative;
-        }
-
-        .vk-iframe-wrapper {
-            position: relative;
-            width: 100%;
-            min-height: 400px;
-            background: var(--tg-theme-secondary-bg-color);
-            border-radius: var(--border-radius-sm);
-            overflow: hidden;
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .vk-iframe {
-            width: 100%;
-            height: 500px;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            background: white;
-        }
-
-        .vk-iframe-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 1;
-        }
-
-        .vk-iframe-close {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.5);
-            border: none;
-            border-radius: 8px;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: white;
-            font-size: 20px;
-            transition: var(--transition);
-            z-index: 10;
-        }
-
-        .vk-iframe-close:hover {
-            background: rgba(0, 0, 0, 0.7);
         }
     </style>
 </head>
@@ -576,29 +438,29 @@
         </div>
 
         <div class="card page-transition active">
-            <!-- OAuth Buttons First -->
+            <!-- OAuth Buttons - Using redirect approach to avoid iframe blocking -->
             <div class="oauth-buttons">
-                <!-- VK One Tap Auth Container -->
-                <div id="vkOneTapContainer" class="vk-one-tap-container">
-                    <button class="btn btn-vk" type="button" id="vkAuthBtn">
-                        <span class="btn-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z"/>
-                            </svg>
-                        </span>
-                        Войти через VK ID
-                    </button>
-                </div>
-                <!-- VK Iframe will be inserted here when button is clicked -->
-                <div id="vkIframeContainer" class="vk-iframe-wrapper hidden">
-                    <div class="vk-iframe-loading" id="vkIframeLoading">
-                        <div class="spinner"></div>
-                        <div style="margin-top: 12px; color: var(--tg-theme-hint-color);">Загрузка VK ID...</div>
-                    </div>
-                    <iframe id="vkIframe" class="vk-iframe hidden" allow="encrypted-media"></iframe>
-                    <button class="vk-iframe-close" id="vkIframeClose">×</button>
-                </div>
+                <!-- Keycloak Login Button (Primary) -->
+                <button class="btn btn-keycloak" type="button" id="keycloakAuthBtn">
+                    <span class="btn-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                        </svg>
+                    </span>
+                    Войти через Keycloak
+                </button>
 
+                <!-- VK Auth Button (redirects through Keycloak or directly) -->
+                <button class="btn btn-vk" type="button" id="vkAuthBtn">
+                    <span class="btn-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z"/>
+                        </svg>
+                    </span>
+                    Войти через VK ID
+                </button>
+
+                <!-- ESIA (Gosuslugi) Button -->
                 <button class="btn btn-esia" type="button" id="esiaAuthBtn">
                     <span class="btn-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -706,23 +568,6 @@
         {% endif %}
     </div>
 
-    <!-- OAuth Modal Template -->
-    <div id="oauthModal" class="oauth-modal hidden">
-        <div class="oauth-modal-content">
-            <div class="oauth-modal-header">
-                <div class="oauth-modal-title" id="oauthModalTitle">Авторизация</div>
-                <button class="oauth-modal-close" id="oauthModalClose">×</button>
-            </div>
-            <div class="oauth-modal-body">
-                <div class="oauth-loading" id="oauthLoading">
-                    <div class="spinner"></div>
-                    <div style="margin-top: 12px; color: var(--tg-theme-hint-color);">Загрузка...</div>
-                </div>
-                <iframe id="oauthIframe" class="oauth-iframe hidden"></iframe>
-            </div>
-        </div>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize Telegram WebApp with fallback for non-Telegram environments
@@ -731,7 +576,8 @@
                 ready: () => {},
                 showAlert: (msg) => alert(msg),
                 sendData: (data) => console.log('Telegram sendData:', data),
-                themeParams: {}
+                themeParams: {},
+                openLink: (url) => window.open(url, '_blank')
             };
             
             try {
@@ -744,205 +590,81 @@
             // Set theme colors
             document.documentElement.style.setProperty('--tg-theme-link-color', tg.themeParams?.link_color || '#4a6cf7');
             
-            // OAuth Modal Management
-            const oauthModal = document.getElementById('oauthModal');
-            const oauthIframe = document.getElementById('oauthIframe');
-            const oauthLoading = document.getElementById('oauthLoading');
-            const oauthModalClose = document.getElementById('oauthModalClose');
-            const oauthModalTitle = document.getElementById('oauthModalTitle');
-
-            // Ensure modal is hidden on load
-            if (oauthModal) {
-                oauthModal.classList.add('hidden');
-                oauthModal.style.display = 'none';
+            // Helper function to redirect to OAuth URL
+            function redirectToAuth(authUrl) {
+                // Use redirect approach - works in both web and Telegram mini apps
+                window.location.href = authUrl;
             }
 
-            let iframeLoadTimeout = null;
-
-            function showOAuthModal(title, iframeUrl) {
-                if (!oauthModal) return;
+            // Helper function to open OAuth in popup (alternative to redirect)
+            function openAuthPopup(authUrl, windowName) {
+                const width = 500;
+                const height = 600;
+                const left = (window.innerWidth - width) / 2;
+                const top = (window.innerHeight - height) / 2;
                 
-                oauthModalTitle.textContent = title;
-                oauthModal.style.display = 'flex';
-                oauthModal.classList.remove('hidden');
-                oauthLoading.classList.remove('hidden');
-                oauthIframe.classList.add('hidden');
-                oauthIframe.src = iframeUrl;
+                const popup = window.open(
+                    authUrl,
+                    windowName,
+                    `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
+                );
                 
-                // Set timeout for iframe loading (30 seconds)
-                if (iframeLoadTimeout) clearTimeout(iframeLoadTimeout);
-                iframeLoadTimeout = setTimeout(() => {
-                    if (!oauthIframe.classList.contains('hidden')) {
-                        return; // Already loaded
-                    }
-                    console.error('OAuth iframe load timeout');
-                    hideOAuthModal();
-                    tg.showAlert('Превышено время ожидания загрузки. Попробуйте еще раз.');
-                }, 30000);
-                
-                console.log('OAuth modal opened:', title);
-            }
-
-            function hideOAuthModal() {
-                if (!oauthModal) return;
-                
-                if (iframeLoadTimeout) {
-                    clearTimeout(iframeLoadTimeout);
-                    iframeLoadTimeout = null;
+                if (!popup || popup.closed) {
+                    // Popup blocked - fallback to redirect
+                    console.log('Popup blocked, falling back to redirect');
+                    redirectToAuth(authUrl);
+                    return null;
                 }
                 
-                oauthModal.classList.add('hidden');
-                oauthModal.style.display = 'none';
-                oauthIframe.src = '';
-                oauthLoading.classList.remove('hidden');
-                oauthIframe.classList.add('hidden');
-                
-                console.log('OAuth modal closed');
+                return popup;
             }
 
-            // OAuth iframe load handler
-            if (oauthIframe) {
-                oauthIframe.addEventListener('load', () => {
-                    // Only hide loading if iframe has a source
-                    if (oauthIframe.src && oauthIframe.src !== 'about:blank' && oauthIframe.src !== '') {
-                        if (iframeLoadTimeout) {
-                            clearTimeout(iframeLoadTimeout);
-                            iframeLoadTimeout = null;
+            // Keycloak OAuth - Primary authentication method
+            const keycloakAuthBtn = document.getElementById('keycloakAuthBtn');
+            if (keycloakAuthBtn) {
+                keycloakAuthBtn.addEventListener('click', async () => {
+                    console.log('Keycloak Auth button clicked');
+                    keycloakAuthBtn.disabled = true;
+                    keycloakAuthBtn.textContent = 'Загрузка...';
+                    
+                    try {
+                        const response = await fetch('/oauth/keycloak/init', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Server error: ' + response.status);
                         }
-                        oauthLoading.classList.add('hidden');
-                        oauthIframe.classList.remove('hidden');
-                        console.log('OAuth iframe loaded successfully');
-                    }
-                });
-                
-                oauthIframe.addEventListener('error', (e) => {
-                    console.error('OAuth iframe error:', e);
-                    hideOAuthModal();
-                    tg.showAlert('Ошибка загрузки формы авторизации');
-                });
-            }
-
-            // Close button handler
-            if (oauthModalClose) {
-                oauthModalClose.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    hideOAuthModal();
-                    console.log('Close button clicked');
-                });
-            }
-
-            // Click outside modal to close
-            if (oauthModal) {
-                oauthModal.addEventListener('click', (e) => {
-                    if (e.target === oauthModal) {
-                        hideOAuthModal();
-                        console.log('Clicked outside modal');
+                        
+                        const data = await response.json();
+                        
+                        if (data.success && data.auth_url) {
+                            // Use redirect approach for Keycloak
+                            console.log('Redirecting to Keycloak:', data.auth_url);
+                            redirectToAuth(data.auth_url);
+                        } else {
+                            keycloakAuthBtn.disabled = false;
+                            keycloakAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span> Войти через Keycloak';
+                            tg.showAlert(data.error || 'Ошибка инициализации Keycloak');
+                        }
+                    } catch (error) {
+                        console.error('Keycloak OAuth error:', error);
+                        keycloakAuthBtn.disabled = false;
+                        keycloakAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span> Войти через Keycloak';
+                        tg.showAlert('Ошибка подключения к Keycloak: ' + error.message);
                     }
                 });
             }
 
-            // ESC key to close modal
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && oauthModal && !oauthModal.classList.contains('hidden')) {
-                    hideOAuthModal();
-                }
-            });
-
-            // VK One Tap Auth - inline iframe approach
+            // VK Auth - Using redirect approach (VK ID OAuth 2.0)
             const vkAuthBtn = document.getElementById('vkAuthBtn');
-            const vkIframeContainer = document.getElementById('vkIframeContainer');
-            const vkIframe = document.getElementById('vkIframe');
-            const vkIframeLoading = document.getElementById('vkIframeLoading');
-            const vkIframeClose = document.getElementById('vkIframeClose');
-            const vkOneTapContainer = document.getElementById('vkOneTapContainer');
-            
-            let vkCurrentUuid = null;
-            let vkIframeLoadTimeout = null;
-            
-            function showVkIframe(iframeUrl, uuid) {
-                if (!vkIframeContainer || !vkIframe) return;
-                
-                vkCurrentUuid = uuid;
-                vkIframeContainer.classList.remove('hidden');
-                vkIframeLoading.classList.remove('hidden');
-                vkIframe.classList.add('hidden');
-                vkIframe.src = iframeUrl;
-                
-                // Hide the original button
-                if (vkAuthBtn) {
-                    vkAuthBtn.classList.add('hidden');
-                }
-                
-                // Set timeout for iframe loading (15 seconds)
-                if (vkIframeLoadTimeout) clearTimeout(vkIframeLoadTimeout);
-                vkIframeLoadTimeout = setTimeout(() => {
-                    if (vkIframe.classList.contains('hidden')) {
-                        console.error('VK iframe load timeout');
-                        hideVkIframe();
-                        tg.showAlert('Превышено время ожидания загрузки VK ID. Попробуйте еще раз.');
-                    }
-                }, 15000);
-                
-                console.log('VK One Tap iframe opened, UUID:', uuid);
-            }
-            
-            function hideVkIframe() {
-                if (!vkIframeContainer || !vkIframe) return;
-                
-                if (vkIframeLoadTimeout) {
-                    clearTimeout(vkIframeLoadTimeout);
-                    vkIframeLoadTimeout = null;
-                }
-                
-                vkIframeContainer.classList.add('hidden');
-                vkIframe.src = '';
-                vkIframeLoading.classList.remove('hidden');
-                vkIframe.classList.add('hidden');
-                vkCurrentUuid = null;
-                
-                // Show the original button again
-                if (vkAuthBtn) {
-                    vkAuthBtn.classList.remove('hidden');
-                }
-                
-                console.log('VK iframe closed');
-            }
-            
-            // VK iframe load handler
-            if (vkIframe) {
-                vkIframe.addEventListener('load', () => {
-                    if (vkIframe.src && vkIframe.src !== 'about:blank' && vkIframe.src !== '') {
-                        if (vkIframeLoadTimeout) {
-                            clearTimeout(vkIframeLoadTimeout);
-                            vkIframeLoadTimeout = null;
-                        }
-                        vkIframeLoading.classList.add('hidden');
-                        vkIframe.classList.remove('hidden');
-                        console.log('VK iframe loaded successfully');
-                    }
-                });
-                
-                vkIframe.addEventListener('error', (e) => {
-                    console.error('VK iframe error:', e);
-                    hideVkIframe();
-                    tg.showAlert('Ошибка загрузки формы VK ID');
-                });
-            }
-            
-            // VK close button handler
-            if (vkIframeClose) {
-                vkIframeClose.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    hideVkIframe();
-                });
-            }
-            
-            // VK Auth button click handler
             if (vkAuthBtn) {
                 vkAuthBtn.addEventListener('click', async () => {
                     console.log('VK Auth button clicked');
+                    vkAuthBtn.disabled = true;
+                    vkAuthBtn.textContent = 'Загрузка...';
+                    
                     try {
                         const response = await fetch('/oauth/vk/init', {
                             method: 'POST',
@@ -955,23 +677,38 @@
                         
                         const data = await response.json();
                         
-                        if (data.success && data.iframe_url) {
-                            showVkIframe(data.iframe_url, data.uuid);
+                        if (data.success && data.auth_url) {
+                            // Use redirect approach for VK
+                            console.log('Redirecting to VK:', data.auth_url);
+                            redirectToAuth(data.auth_url);
+                        } else if (data.success && data.iframe_url) {
+                            // Fallback: if iframe_url is returned, also redirect (iframe blocked)
+                            console.log('VK returned iframe_url, using redirect approach');
+                            tg.showAlert('VK ID не поддерживает встроенный вход. Используйте Keycloak для авторизации.');
+                            vkAuthBtn.disabled = false;
+                            vkAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z"/></svg></span> Войти через VK ID';
                         } else {
+                            vkAuthBtn.disabled = false;
+                            vkAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z"/></svg></span> Войти через VK ID';
                             tg.showAlert(data.error || 'Ошибка инициализации VK OAuth');
                         }
                     } catch (error) {
                         console.error('VK OAuth error:', error);
+                        vkAuthBtn.disabled = false;
+                        vkAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z"/></svg></span> Войти через VK ID';
                         tg.showAlert('Ошибка подключения к VK: ' + error.message);
                     }
                 });
             }
 
-            // ESIA OAuth
+            // ESIA OAuth - Using redirect approach
             const esiaAuthBtn = document.getElementById('esiaAuthBtn');
             if (esiaAuthBtn) {
                 esiaAuthBtn.addEventListener('click', async () => {
                     console.log('ESIA Auth button clicked');
+                    esiaAuthBtn.disabled = true;
+                    esiaAuthBtn.textContent = 'Загрузка...';
+                    
                     try {
                         const response = await fetch('/oauth/esia/init', {
                             method: 'POST',
@@ -985,107 +722,22 @@
                         const data = await response.json();
                         
                         if (data.success && data.iframe_url) {
-                            showOAuthModal('Вход через Госуслуги', data.iframe_url);
+                            // Use redirect approach for ESIA (iframe_url is actually auth URL)
+                            console.log('Redirecting to ESIA:', data.iframe_url);
+                            redirectToAuth(data.iframe_url);
                         } else {
+                            esiaAuthBtn.disabled = false;
+                            esiaAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"/></svg></span> Войти через Госуслуги';
                             tg.showAlert(data.error || 'Ошибка инициализации Госуслуги OAuth');
                         }
                     } catch (error) {
                         console.error('ESIA OAuth error:', error);
+                        esiaAuthBtn.disabled = false;
+                        esiaAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"/></svg></span> Войти через Госуслуги';
                         tg.showAlert('Ошибка подключения к Госуслугам: ' + error.message);
                     }
                 });
             }
-
-            // Listen for postMessage from OAuth iframe (VK ID sends tokens this way)
-            window.addEventListener('message', async (event) => {
-                console.log('Received postMessage from:', event.origin, event.data);
-                
-                // Security: verify origin
-                const allowedOrigins = ['https://id.vk.com', 'https://esia-portal1.test.gosuslugi.ru'];
-                if (!allowedOrigins.includes(event.origin)) {
-                    console.log('Ignored message from untrusted origin:', event.origin);
-                    return;
-                }
-
-                const data = event.data;
-                
-                // Handle VK ID One Tap Auth response
-                // VK sends different event types: 'one_tap_auth_result', 'silent_token', etc.
-                if (event.origin === 'https://id.vk.com') {
-                    console.log('VK message received:', data);
-                    
-                    // Handle successful silent_token response
-                    if (data.type === 'one_tap_auth_result' || 
-                        data.type === 'silent_token' || 
-                        data.silent_token ||
-                        data.type === 'VKWebAppGetAuthTokenResult' || 
-                        data.payload?.token) {
-                        
-                        const silentToken = data.silent_token || data.payload?.token || data.token;
-                        const uuid = data.uuid || data.payload?.uuid || vkCurrentUuid;
-                        
-                        if (silentToken) {
-                            console.log('VK silent_token received, exchanging...');
-                            
-                            try {
-                                const response = await fetch('/oauth/vk/exchange', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ token: silentToken, uuid })
-                                });
-                                
-                                if (!response.ok) {
-                                    throw new Error('Exchange failed: ' + response.status);
-                                }
-                                
-                                const result = await response.json();
-                                
-                                if (result.success) {
-                                    hideVkIframe();
-                                    tg.showAlert('Успешная авторизация через VK ID');
-                                    setTimeout(() => window.location.reload(), 1000);
-                                } else {
-                                    hideVkIframe();
-                                    tg.showAlert('Ошибка авторизации: ' + (result.error || 'Unknown error'));
-                                }
-                            } catch (error) {
-                                console.error('Token exchange error:', error);
-                                hideVkIframe();
-                                tg.showAlert('Ошибка обработки токена: ' + error.message);
-                            }
-                            return;
-                        }
-                    }
-                    
-                    // Handle VK auth errors
-                    if (data.type === 'one_tap_auth_error' || data.type === 'error' || data.error) {
-                        console.error('VK auth error:', data);
-                        hideVkIframe();
-                        tg.showAlert('Ошибка авторизации VK: ' + (data.error_description || data.error || 'Unknown error'));
-                        return;
-                    }
-                    
-                    // Handle resize events from VK iframe
-                    if (data.type === 'resize' && data.height) {
-                        // Validate height is a reasonable positive number (max 2000px)
-                        const height = parseInt(data.height, 10);
-                        if (vkIframe && !isNaN(height) && height > 0 && height <= 2000) {
-                            vkIframe.style.height = height + 'px';
-                        }
-                        return;
-                    }
-                }
-
-                // Handle ESIA response (if they use postMessage)
-                if (event.origin === 'https://esia-portal1.test.gosuslugi.ru') {
-                    if (data.type === 'esia_success' || data.code) {
-                        console.log('ESIA auth successful');
-                        hideOAuthModal();
-                        tg.showAlert('Успешная авторизация через Госуслуги');
-                        setTimeout(() => window.location.reload(), 1000);
-                    }
-                }
-            });
 
             // Page transitions
             const mainSection = document.getElementById('mainSection');
