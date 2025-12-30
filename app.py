@@ -83,49 +83,19 @@ def generate_code_challenge(code_verifier):
 
 @app.route("/oauth/vk/init", methods=["POST"])
 def vk_oauth_init():
-    """Initialize VK ID OAuth flow and return iframe URL for One Tap Auth."""
-    if not VK_APP_ID:
-        return jsonify({"success": False, "error": "VK_APP_ID not configured"}), 500
-
-    if not APP_ORIGIN:
-        return jsonify({"success": False, "error": "APP_ORIGIN not configured"}), 500
-
-    # Generate PKCE code verifier and challenge
-    code_verifier = generate_code_verifier()
-    code_challenge = generate_code_challenge(code_verifier)
-
-    # Store code_verifier in session for later token exchange
-    session['vk_code_verifier'] = code_verifier
-
-    # Generate unique UUID for this auth request
-    uuid = secrets.token_urlsafe(16)
-    session['vk_uuid'] = uuid
-
-    # Build VK One Tap Auth iframe URL
-    params = {
-        'app_id': VK_APP_ID,
-        'response_type': 'silent_token',
-        'v': '1.61.2',
-        'origin': APP_ORIGIN,
-        'uuid': uuid,
-        'display': 'default',
-        'button_skin': 'primary',
-        'show_agreements': '1',
-        'show_alternative_login': '1',
-        'style_height': '50',
-        'style_border_radius': '8',
-        'lang_id': '0',
-        'code_challenge': code_challenge,
-        'code_challenge_method': 's256',
-    }
-
-    iframe_url = f"https://id.vk.com/button_one_tap_auth?{urllib.parse.urlencode(params)}"
-
+    """Initialize VK ID OAuth flow.
+    
+    Note: VK ID's One Tap Auth requires iframe embedding which is blocked by
+    X-Frame-Options headers. Direct VK OAuth is not supported in this app.
+    Use Keycloak as an identity broker for VK authentication instead.
+    """
+    # VK ID's silent_token flow requires iframe embedding which is blocked
+    # by browser security (X-Frame-Options). Recommend using Keycloak.
     return jsonify({
-        "success": True,
-        "iframe_url": iframe_url,
-        "uuid": uuid
-    })
+        "success": False,
+        "error": "VK ID требует iframe, который заблокирован браузером. "
+                 "Используйте авторизацию через Keycloak для входа через VK."
+    }), 400
 
 
 @app.route("/oauth/vk/exchange", methods=["POST"])

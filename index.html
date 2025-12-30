@@ -619,6 +619,19 @@
                 return popup;
             }
 
+            // Button original HTML for restoration after error
+            const buttonOriginalHtml = {
+                keycloak: '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span> Войти через Keycloak',
+                vk: '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z"/></svg></span> Войти через VK ID',
+                esia: '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"/></svg></span> Войти через Госуслуги'
+            };
+
+            // Helper to restore button state after error
+            function restoreButton(btn, type) {
+                btn.disabled = false;
+                btn.innerHTML = buttonOriginalHtml[type];
+            }
+
             // Keycloak OAuth - Primary authentication method
             const keycloakAuthBtn = document.getElementById('keycloakAuthBtn');
             if (keycloakAuthBtn) {
@@ -633,10 +646,6 @@
                             headers: { 'Content-Type': 'application/json' }
                         });
                         
-                        if (!response.ok) {
-                            throw new Error('Server error: ' + response.status);
-                        }
-                        
                         const data = await response.json();
                         
                         if (data.success && data.auth_url) {
@@ -644,20 +653,19 @@
                             console.log('Redirecting to Keycloak:', data.auth_url);
                             redirectToAuth(data.auth_url);
                         } else {
-                            keycloakAuthBtn.disabled = false;
-                            keycloakAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span> Войти через Keycloak';
+                            restoreButton(keycloakAuthBtn, 'keycloak');
                             tg.showAlert(data.error || 'Ошибка инициализации Keycloak');
                         }
                     } catch (error) {
                         console.error('Keycloak OAuth error:', error);
-                        keycloakAuthBtn.disabled = false;
-                        keycloakAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span> Войти через Keycloak';
+                        restoreButton(keycloakAuthBtn, 'keycloak');
                         tg.showAlert('Ошибка подключения к Keycloak: ' + error.message);
                     }
                 });
             }
 
-            // VK Auth - Using redirect approach (VK ID OAuth 2.0)
+            // VK Auth - Note: VK ID requires iframe which is blocked by browsers
+            // Use Keycloak as identity broker for VK authentication
             const vkAuthBtn = document.getElementById('vkAuthBtn');
             if (vkAuthBtn) {
                 vkAuthBtn.addEventListener('click', async () => {
@@ -671,31 +679,14 @@
                             headers: { 'Content-Type': 'application/json' }
                         });
                         
-                        if (!response.ok) {
-                            throw new Error('Server error: ' + response.status);
-                        }
-                        
                         const data = await response.json();
                         
-                        if (data.success && data.auth_url) {
-                            // Use redirect approach for VK
-                            console.log('Redirecting to VK:', data.auth_url);
-                            redirectToAuth(data.auth_url);
-                        } else if (data.success && data.iframe_url) {
-                            // Fallback: if iframe_url is returned, also redirect (iframe blocked)
-                            console.log('VK returned iframe_url, using redirect approach');
-                            tg.showAlert('VK ID не поддерживает встроенный вход. Используйте Keycloak для авторизации.');
-                            vkAuthBtn.disabled = false;
-                            vkAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z"/></svg></span> Войти через VK ID';
-                        } else {
-                            vkAuthBtn.disabled = false;
-                            vkAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z"/></svg></span> Войти через VK ID';
-                            tg.showAlert(data.error || 'Ошибка инициализации VK OAuth');
-                        }
+                        // VK endpoint now returns an error recommending Keycloak
+                        restoreButton(vkAuthBtn, 'vk');
+                        tg.showAlert(data.error || 'VK ID не поддерживается. Используйте Keycloak.');
                     } catch (error) {
                         console.error('VK OAuth error:', error);
-                        vkAuthBtn.disabled = false;
-                        vkAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z"/></svg></span> Войти через VK ID';
+                        restoreButton(vkAuthBtn, 'vk');
                         tg.showAlert('Ошибка подключения к VK: ' + error.message);
                     }
                 });
@@ -715,10 +706,6 @@
                             headers: { 'Content-Type': 'application/json' }
                         });
                         
-                        if (!response.ok) {
-                            throw new Error('Server error: ' + response.status);
-                        }
-                        
                         const data = await response.json();
                         
                         if (data.success && data.iframe_url) {
@@ -726,14 +713,12 @@
                             console.log('Redirecting to ESIA:', data.iframe_url);
                             redirectToAuth(data.iframe_url);
                         } else {
-                            esiaAuthBtn.disabled = false;
-                            esiaAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"/></svg></span> Войти через Госуслуги';
+                            restoreButton(esiaAuthBtn, 'esia');
                             tg.showAlert(data.error || 'Ошибка инициализации Госуслуги OAuth');
                         }
                     } catch (error) {
                         console.error('ESIA OAuth error:', error);
-                        esiaAuthBtn.disabled = false;
-                        esiaAuthBtn.innerHTML = '<span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"/></svg></span> Войти через Госуслуги';
+                        restoreButton(esiaAuthBtn, 'esia');
                         tg.showAlert('Ошибка подключения к Госуслугам: ' + error.message);
                     }
                 });
