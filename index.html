@@ -40,142 +40,117 @@
 
         <div class="card page-transition active">
             <!-- OAuth Buttons - Using redirect approach to avoid iframe blocking -->
-            <div class="oauth-buttons">
-                <!-- Keycloak Login Button (Primary) -->
-                <button class="btn btn-keycloak js-auth-btn" type="button" data-provider="Keycloak"
-                    data-url="{{ url_for('keycloak_oauth_init') }}">
-                    <span class="btn-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-                        </svg>
-                    </span>
-                    Войти через Keycloak
-                </button>
+            <!-- Keycloak Login Button (Primary) -->
+            <button class="btn btn-keycloak js-auth-btn" type="button" data-provider="Keycloak"
+                data-url="{{ url_for('keycloak_oauth_init') }}">
+                <span class="btn-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                    </svg>
+                </span>
+                Войти через Keycloak
+            </button>
+        </div>
 
-                <!-- VK Auth Button (redirects through Keycloak or directly) -->
-                <button class="btn btn-vk js-auth-btn" type="button" data-provider="VK"
-                    data-url="{{ url_for('vk_oauth_init') }}">
-                    <span class="btn-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M12.785 16.241s.288-.032.436-.193c.136-.148.132-.425.132-.425s-.019-1.297.574-1.487c.584-.187 1.334 1.254 2.129 1.808.602.42 1.06.328 1.06.328l2.127-.03s1.112-.07.585-.956c-.043-.072-.307-.656-1.58-1.855-1.333-1.256-1.154-1.053.451-3.225.977-1.323 1.368-2.13 1.245-2.475-.117-.328-.84-.241-.84-.241l-2.396.015s-.178-.024-.309.056c-.128.078-.21.262-.21.262s-.375 1.013-.875 1.875c-1.054 1.817-1.476 1.913-1.649 1.8-.4-.262-.3-1.051-.3-1.613 0-1.753.262-2.484-.511-2.672-.257-.062-.445-.104-1.101-.11-.842-.01-1.554.002-1.957.203-.268.134-.475.432-.349.449.156.021.509.097.696.356.242.336.233 1.091.233 1.091s.139 2.064-.324 2.32c-.318.176-.754-.183-1.69-1.826-.479-.851-.841-1.793-.841-1.793s-.07-.174-.195-.267c-.151-.113-.362-.149-.362-.149l-2.276.015s-.342.01-.468.161c-.112.134-.009.412-.009.412s1.765 4.191 3.763 6.302c1.833 1.937 3.913 1.81 3.913 1.81h.944z" />
-                        </svg>
-                    </span>
-                    Войти через VK ID
-                </button>
+        <div class="oauth-divider">
+            <span>или используйте логин</span>
+        </div>
 
-                <!-- ESIA (Gosuslugi) Button -->
-                <button class="btn btn-esia js-auth-btn" type="button" data-provider="Gosuslugi"
-                    data-url="{{ url_for('esia_oauth_init') }}">
-                    <span class="btn-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z" />
-                        </svg>
-                    </span>
-                    Войти через Госуслуги
-                </button>
+        <!-- Traditional Login Form -->
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="login">Логин</label>
+                <input id="login" name="login" type="text" class="input-field" placeholder="Ваш логин" required
+                    autocomplete="username">
             </div>
-
-            <div class="oauth-divider">
-                <span>или используйте логин</span>
+            <div class="form-group">
+                <label class="form-label" for="password">Пароль</label>
+                <input id="password" name="password" type="password" class="input-field" placeholder="Пароль" required
+                    autocomplete="current-password">
             </div>
+            <button class="btn btn-primary" type="submit">
+                <span class="btn-icon">→</span> Продолжить
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <div class="app-header">
+        <div class="app-logo">
+            <img src="{{ url_for('static', filename='bot.png') }}" alt="App Logo">
+        </div>
+        <h1>Выберите сервис</h1>
+        <div class="app-subtitle">Управление облачной инфраструктурой</div>
+    </div>
 
-            <!-- Traditional Login Form -->
-            <form action="{{ url_for('login') }}" method="POST">
-                <div class="form-group">
-                    <label class="form-label" for="login">Логин</label>
-                    <input id="login" name="login" type="text" class="input-field" placeholder="Ваш логин" required
-                        autocomplete="username">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="password">Пароль</label>
-                    <input id="password" name="password" type="password" class="input-field" placeholder="Пароль"
-                        required autocomplete="current-password">
-                </div>
-                <button class="btn btn-primary" type="submit">
-                    <span class="btn-icon">→</span> Продолжить
+    <div class="page-transition active" id="mainSection">
+        <div class="choice-grid">
+            <div class="choice-card" data-choice="Pangolin">
+                <div class="choice-title">Pangolin</div>
+                <div class="choice-desc">Кластер</div>
+            </div>
+            <div class="choice-card" data-choice="Corax">
+                <div class="choice-title">Corax</div>
+                <div class="choice-desc">Кластер</div>
+            </div>
+        </div>
+
+        <div class="logout-container">
+            <form action="{{ url_for('logout') }}" method="POST">
+                <button class="btn btn-secondary" type="submit">
+                    <span class="btn-icon">⇠</span> Выйти из аккаунта
                 </button>
             </form>
         </div>
-        {% else %}
-        <div class="app-header">
-            <div class="app-logo">
-                <img src="{{ url_for('static', filename='bot.png') }}" alt="App Logo">
-            </div>
-            <h1>Выберите сервис</h1>
-            <div class="app-subtitle">Управление облачной инфраструктурой</div>
-        </div>
+    </div>
 
-        <div class="page-transition active" id="mainSection">
-            <div class="choice-grid">
-                <div class="choice-card" data-choice="Pangolin">
-                    <div class="choice-title">Pangolin</div>
-                    <div class="choice-desc">Кластер</div>
-                </div>
-                <div class="choice-card" data-choice="Corax">
-                    <div class="choice-title">Corax</div>
-                    <div class="choice-desc">Кластер</div>
-                </div>
+    <div class="card hidden page-transition" id="formSection">
+        <h1 style="font-size:24px;margin-bottom:16px;text-align:left">Задайте параметры</h1>
+        <form class="test-form">
+            <input type="hidden" class="choice-hidden" value="">
+
+            <div class="form-group">
+                <label class="form-label" for="subnet">Подсеть</label>
+                <select id="subnet" class="input-field select-field subnet-select" required>
+                    <option value="" disabled selected>Выберите подсеть</option>
+                    <option value="10.10.10.0/24">10.10.10.0/24 (Production)</option>
+                    <option value="172.0.0.0/24">172.0.0.0/24 (Staging)</option>
+                    <option value="192.0.0.0/24">192.0.0.0/24 (Development)</option>
+                </select>
             </div>
 
-            <div class="logout-container">
-                <form action="{{ url_for('logout') }}" method="POST">
-                    <button class="btn btn-secondary" type="submit">
-                        <span class="btn-icon">⇠</span> Выйти из аккаунта
-                    </button>
-                </form>
+            <div class="form-group">
+                <label class="form-label" for="flavor">Конфигурация</label>
+                <select id="flavor" class="input-field select-field flavor-select" required>
+                    <option value="" disabled selected>Выберите конфигурацию</option>
+                    <option value="2/4 30%">2 ядра / 4 ГБ RAM (30%)</option>
+                    <option value="4/8 30%">4 ядра / 8 ГБ RAM (30%)</option>
+                    <option value="8/16 30%">8 ядер / 16 ГБ RAM (30%)</option>
+                </select>
             </div>
-        </div>
 
-        <div class="card hidden page-transition" id="formSection">
-            <h1 style="font-size:24px;margin-bottom:16px;text-align:left">Задайте параметры</h1>
-            <form class="test-form">
-                <input type="hidden" class="choice-hidden" value="">
+            <div class="form-group">
+                <label class="form-label" for="title">Название ВМ</label>
+                <input id="title" type="text" class="input-field title-inp" placeholder="Например: web-server-prod"
+                    required>
+            </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="subnet">Подсеть</label>
-                    <select id="subnet" class="input-field select-field subnet-select" required>
-                        <option value="" disabled selected>Выберите подсеть</option>
-                        <option value="10.10.10.0/24">10.10.10.0/24 (Production)</option>
-                        <option value="172.0.0.0/24">172.0.0.0/24 (Staging)</option>
-                        <option value="192.0.0.0/24">192.0.0.0/24 (Development)</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <label class="form-label" for="desc">Описание</label>
+                <input id="desc" type="text" class="input-field desc-inp" placeholder="Назначение сервера">
+            </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="flavor">Конфигурация</label>
-                    <select id="flavor" class="input-field select-field flavor-select" required>
-                        <option value="" disabled selected>Выберите конфигурацию</option>
-                        <option value="2/4 30%">2 ядра / 4 ГБ RAM (30%)</option>
-                        <option value="4/8 30%">4 ядра / 8 ГБ RAM (30%)</option>
-                        <option value="8/16 30%">8 ядер / 16 ГБ RAM (30%)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="title">Название ВМ</label>
-                    <input id="title" type="text" class="input-field title-inp" placeholder="Например: web-server-prod"
-                        required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="desc">Описание</label>
-                    <input id="desc" type="text" class="input-field desc-inp" placeholder="Назначение сервера">
-                </div>
-
-                <div class="form-actions">
-                    <button class="btn btn-primary s-btn" type="button">
-                        <span class="btn-icon">→</span> Создать кластер
-                    </button>
-                    <button class="btn btn-secondary back-btn" type="button">
-                        <span class="btn-icon">⇠</span> Назад
-                    </button>
-                </div>
-            </form>
-        </div>
-        {% endif %}
+            <div class="form-actions">
+                <button class="btn btn-primary s-btn" type="button">
+                    <span class="btn-icon">→</span> Создать кластер
+                </button>
+                <button class="btn btn-secondary back-btn" type="button">
+                    <span class="btn-icon">⇠</span> Назад
+                </button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
     </div>
 
     <script src="{{ url_for('static', filename='app.js') }}"></script>

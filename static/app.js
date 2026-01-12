@@ -124,8 +124,8 @@ class CloudManagerApp {
      */
     handleAuthResponse(data, btn, provider) {
         if (data.success) {
-            // Check for redirect URL (supports both auth_url and iframe_url keys)
-            const redirectUrl = data.auth_url || data.iframe_url;
+            // Check for redirect URL
+            const redirectUrl = data.auth_url;
 
             if (redirectUrl) {
                 console.log('Redirecting to:', redirectUrl);

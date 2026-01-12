@@ -181,28 +181,6 @@ h1 {
     background: rgba(255, 255, 255, 0.15);
 }
 
-.btn-vk {
-    background: linear-gradient(135deg, #0077FF, #005ACC);
-    color: white;
-    box-shadow: 0 4px 12px rgba(0, 119, 255, 0.3);
-}
-
-.btn-vk:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 6px rgba(0, 119, 255, 0.2);
-}
-
-.btn-esia {
-    background: linear-gradient(135deg, #0D4CD3, #0A3CA6);
-    color: white;
-    box-shadow: 0 4px 12px rgba(13, 76, 211, 0.3);
-}
-
-.btn-esia:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 6px rgba(13, 76, 211, 0.2);
-}
-
 .btn-keycloak {
     background: linear-gradient(135deg, #4A90D9, #2E6EB5);
     color: white;
@@ -315,8 +293,15 @@ h1 {
 }
 
 @keyframes slideIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .alert.success {
@@ -383,11 +368,16 @@ h1 {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-    .btn, .choice-card, .input-field {
+
+    .btn,
+    .choice-card,
+    .input-field {
         transition: var(--transition);
     }
 }
