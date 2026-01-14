@@ -3,6 +3,7 @@ import secrets
 import hashlib
 import base64
 import urllib.parse
+import json
 
 import requests
 from flask import (
@@ -45,13 +46,18 @@ KEYCLOAK_CLIENT_SECRET = os.getenv("KEYCLOAK_CLIENT_SECRET", "")
 # App origin for OAuth (must be explicitly configured)
 APP_ORIGIN = os.getenv("APP_ORIGIN", "")
 
+# Cloud.ru API credentials
+CLOUD_CLIENT_ID = os.getenv("CLOUD_CLIENT_ID", "")
+CLOUD_CLIENT_SECRET = os.getenv("CLOUD_CLIENT_SECRET", "")
 
 @app.route("/", methods=["GET"])
 def web():
     is_authed = session.get("is_authed", False)
     user_info = {
         "name": session.get("user_name"),
-        "email": session.get("user_email")
+        "email": session.get("user_email"),
+        "cloud_project_id": session.get("user_cloud_project_id"),
+        "all_vms": session.get("all_vms")
     } if is_authed else None
     return render_template("index.html", is_authed=is_authed, user_info=user_info)
 
@@ -95,6 +101,11 @@ def keycloak_oauth_init():
     if not APP_ORIGIN:
         return jsonify({"success": False, "error": "APP_ORIGIN not configured"}), 500
 
+    response = os.system("ping -c 1 -w2 10.10.11.16 > /dev/null 2>&1")
+
+    if response:
+        return jsonify({"success": False, "error": "Network issues with Keycloak"}), 500
+
     # Generate PKCE code verifier and challenge for additional security
     code_verifier = generate_code_verifier()
     code_challenge = generate_code_challenge(code_verifier)
@@ -107,7 +118,7 @@ def keycloak_oauth_init():
     session['keycloak_code_verifier'] = code_verifier
 
     # Build Keycloak authorization URL
-    keycloak_auth_url = f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth"
+    keycloak_auth_url = f"{KEYCLOAK_URL}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth"
     redirect_uri = f"{APP_ORIGIN}/oauth/keycloak/callback"
 
     params = {
@@ -159,7 +170,7 @@ def keycloak_oauth_callback():
 
     # Exchange code for access_token
     try:
-        token_url = f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token"
+        token_url = f"{KEYCLOAK_URL}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token"
         redirect_uri = f"{APP_ORIGIN}/oauth/keycloak/callback"
 
         token_data = {
@@ -177,7 +188,8 @@ def keycloak_oauth_callback():
         token_response = requests.post(
             token_url,
             data=token_data,
-            timeout=10
+            timeout=10,
+            verify=False
         )
         result = token_response.json()
 
@@ -194,33 +206,76 @@ def keycloak_oauth_callback():
         # Optionally fetch user info
         user_info = None
         try:
-            userinfo_url = f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/userinfo"
+            userinfo_url = f"{KEYCLOAK_URL}/auth/realms/{KEYCLOAK_REALM}/protocol/openid-connect/userinfo"
             userinfo_response = requests.get(
                 userinfo_url,
                 headers={'Authorization': f'Bearer {access_token}'},
-                timeout=10
+                timeout=10,
+                verify=False
             )
             if userinfo_response.status_code == 200:
                 user_info = userinfo_response.json()
+                #print(user_info)
         except requests.RequestException:
             pass  # User info is optional
+
+        cloud_project_id_for_token = user_info.get('cloud_project_id')
+        get_all_vms_in_cloud(cloud_project_id_for_token)
 
         session["is_authed"] = True
         session["auth_provider"] = "keycloak"
         if user_info:
             session["user_email"] = user_info.get('email')
             session["user_name"] = user_info.get('preferred_username') or user_info.get('name')
-
+            session["user_cloud_project_id"] = user_info.get('cloud_project_id')
+            session["all_vms"] = get_all_vms_in_cloud(cloud_project_id_for_token)
         # Clean up OAuth session data
         session.pop('keycloak_state', None)
         session.pop('keycloak_code_verifier', None)
 
         flash("Успешная авторизация через Keycloak", "success")
+
         return redirect(url_for("web"))
 
     except requests.RequestException as e:
         flash(f"Ошибка API: {str(e)}", "error")
         return redirect(url_for("web"))
+
+
+def get_access_token_from_cloud():
+    
+    url = "https://iam.api.cloud.ru/api/v1/auth/token"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "keyId": CLOUD_CLIENT_ID,
+        "secret": CLOUD_CLIENT_SECRET
+    }
+
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
+    response.raise_for_status()
+
+    # Получаем токен из ответа
+    token_data = response.json()
+    access_token = token_data.get("access_token")
+
+    return access_token
+
+def get_all_vms_in_cloud(cloud_project_id_for_token):
+    
+    token = get_access_token_from_cloud()
+    
+    url = f"https://compute.api.cloud.ru/api/v1/vms?project_id=49abf5c8-9f16-4ca3-b5d3-5eca9bfac631"
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+
+    response = requests.get(url, headers=headers, allow_redirects=True)
+    response.raise_for_status()  # вызовет исключение при HTTP ошибке
+
+    # Получаем данные
+    vms_data = response.json()
+    total_vms = vms_data.get("total", 0)
+    return total_vms
 
 
 if __name__ == "__main__":
