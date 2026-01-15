@@ -259,6 +259,7 @@ class CloudManagerApp {
         const subnetSelect = document.querySelector('.subnet-select');
         const flavorSelect = document.querySelector('.flavor-select');
         const choiceInput = document.querySelector('.choice-hidden');
+        const cloudProjectIdInput = document.querySelector('.cloud-project-id-hidden');
 
         if (!titleInput || !subnetSelect || !flavorSelect) return;
 
@@ -267,6 +268,7 @@ class CloudManagerApp {
         const subnet = subnetSelect.value;
         const flavor = flavorSelect.value;
         const choice = choiceInput ? (choiceInput.value || "Не выбрано") : "Не выбрано";
+        const cloudProjectId = cloudProjectIdInput ? cloudProjectIdInput.value : '';
 
         if (!subnet || !flavor) {
             this.tg.showAlert("Пожалуйста, выберите подсеть и конфигурацию");
@@ -278,7 +280,7 @@ class CloudManagerApp {
             return;
         }
 
-        const data = { choice, title, desc: description, subnet, flavor };
+        const data = { choice, title, desc: description, subnet, flavor, cloud_project_id: cloudProjectId };
         this.tg.sendData(JSON.stringify(data));
 
         // Show confirmation
