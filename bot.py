@@ -15,12 +15,11 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 bot = Bot(os.getenv("TOKEN"))
-url = os.getenv("APP_ORIGIN", "")
 dp = Dispatcher()
 
 @dp.message(CommandStart())
 async def start(message: types.Message):
-    webAppInfo = types.WebAppInfo(url)
+    webAppInfo = types.WebAppInfo(url="https://176.123.163.57.sslip.io")
     builder = ReplyKeyboardBuilder()
     builder.add(types.KeyboardButton(text='PaaS Cloud manager', web_app=webAppInfo))
     await message.answer(text='Пройдите аутентификацию', reply_markup=builder.as_markup())
