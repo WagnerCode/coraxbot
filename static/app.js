@@ -525,12 +525,7 @@ class CloudManagerApp {
                             }
                         }
                         if (stageStatus && Array.isArray(data.stages)) {
-                            let lastStage = null;
-                            if (typeof data.stages.findLast === 'function') {
-                                lastStage = data.stages.findLast(stage => ['completed', 'failed', 'canceled'].includes(stage.status));
-                            } else {
-                                lastStage = data.stages.slice().reverse().find(stage => ['completed', 'failed', 'canceled'].includes(stage.status));
-                            }
+                            const lastStage = data.stages.slice().reverse().find(stage => ['completed', 'failed', 'canceled'].includes(stage.status));
                             if (lastStage) {
                                 stageStatus.innerText = `Готово! Последний этап: ${lastStage.name || 'unknown'}`;
                                 stageStatus.classList.remove('hidden');

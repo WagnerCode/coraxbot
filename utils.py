@@ -329,7 +329,7 @@ def get_pipeline_status(project_id: int, pipeline_id: int) -> dict:
     gl = get_gitlab_client()
     project = gl.projects.get(project_id)
     pipeline = project.pipelines.get(pipeline_id)
-    jobs = pipeline.jobs.list(per_page=200, get_all=True)
+    jobs = pipeline.jobs.list(per_page=100)
     
     status = pipeline.status
     completed_statuses = {"success", "failed", "canceled", "skipped"}
