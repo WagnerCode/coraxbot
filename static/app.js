@@ -518,9 +518,12 @@ class CloudManagerApp {
                                 progressBar.classList.add('progress-failed');
                             }
                         }
-                        if (stageStatus && data.running_stage) {
-                            stageStatus.innerText = `Готово! Последний этап: ${data.running_stage}`;
-                            stageStatus.classList.remove('hidden');
+                        if (stageStatus && Array.isArray(data.stages)) {
+                            const lastStage = [...data.stages].reverse().find(stage => ['completed', 'failed', 'canceled'].includes(stage.status));
+                            if (lastStage) {
+                                stageStatus.innerText = `Готово! Последний этап: ${this.escapeHtml(lastStage.name || 'unknown')}`;
+                                stageStatus.classList.remove('hidden');
+                            }
                         }
                         return;
                     }

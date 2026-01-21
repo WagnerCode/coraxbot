@@ -335,9 +335,9 @@ def get_pipeline_status(project_id: int, pipeline_id: int) -> dict:
     completed_statuses = {"success", "failed", "canceled", "skipped"}
     running_statuses = {"running"}
     pending_statuses = {"pending", "manual", "scheduled"}
-    active_jobs = [job for job in jobs if job.status in running_statuses]
+    min_running_progress = 5
+    almost_complete_threshold = 95
     has_jobs = len(jobs) > 0
-    running_stage = active_jobs[0].stage if active_jobs else None
 
     stage_order = []
     stage_buckets = {}
@@ -356,8 +356,8 @@ def get_pipeline_status(project_id: int, pipeline_id: int) -> dict:
         stage_failed = len([job for job in stage_jobs if job.status == "failed"])
         stage_canceled = len([job for job in stage_jobs if job.status == "canceled"])
         stage_percent = int((stage_done / stage_total) * 100) if stage_total else 0
-        if stage_running and stage_percent < 95:
-            stage_percent = max(stage_percent, 5)
+        if stage_running and stage_percent < almost_complete_threshold:
+            stage_percent = max(stage_percent, min_running_progress)
         if stage_failed:
             stage_status = "failed"
         elif stage_canceled:
@@ -381,7 +381,8 @@ def get_pipeline_status(project_id: int, pipeline_id: int) -> dict:
     completed_stages = len([stage for stage in stages if stage["status"] in {"completed", "failed", "canceled"}])
     total_stages = len(stages)
     running_stage_info = next((stage for stage in stages if stage["status"] == "running"), None)
-    running_stage = running_stage_info["name"] if running_stage_info else running_stage
+    running_stage_names = [stage["name"] for stage in stages if stage["status"] == "running"]
+    running_stage = ", ".join(running_stage_names) if running_stage_names else None
     if status in completed_statuses:
         percent = 100
     elif status in pending_statuses and completed_stages == 0 and not running_stage_info:
@@ -389,8 +390,8 @@ def get_pipeline_status(project_id: int, pipeline_id: int) -> dict:
     elif total_stages:
         running_progress = (running_stage_info["percent"] / 100) if running_stage_info else 0
         percent = int(((completed_stages + running_progress) / total_stages) * 100)
-        if running_stage_info and percent < 95:
-            percent = max(percent, 5)
+        if running_stage_info and percent < almost_complete_threshold:
+            percent = max(percent, min_running_progress)
     else:
         progress_map = {
             "pending": 0,
