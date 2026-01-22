@@ -350,7 +350,11 @@ def check_pipeline_status(project_id, pipeline_id):
             "success": True,
             "status": status_info['status'],
             "percent": status_info['percent'],
-            "web_url": status_info['web_url']
+            "web_url": status_info['web_url'],
+            "running_stage": status_info.get('running_stage'),
+            "completed_stages": status_info.get('completed_stages', 0),
+            "total_stages": status_info.get('total_stages', 0),
+            "stages": status_info.get('stages', [])
         })
     except Exception as e:
         logger.error(f"Error checking pipeline status: {e}")
@@ -358,4 +362,5 @@ def check_pipeline_status(project_id, pipeline_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    debug_mode = os.getenv("FLASK_DEBUG", "").lower() in {"1", "true", "yes"}
+    app.run(debug=debug_mode, host="0.0.0.0", port=5000)

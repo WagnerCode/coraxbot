@@ -6,6 +6,7 @@ class CloudManagerApp {
     constructor() {
         // Initialize Telegram WebApp or fallback
         this.tg = window.Telegram?.WebApp || this.createMockTelegram();
+        this.unknownStageLabel = 'unknown';
 
         // UI Elements
         this.menuSection = document.getElementById('menuSection');
@@ -340,13 +341,15 @@ class CloudManagerApp {
                 <div class="status-content">
                     <div class="status-spinner"><span class="spinner"></span></div>
                     <div id="statusText" class="status-text">${message}</div>
+                    <div id="stageStatus" class="stage-status hidden"></div>
                     <div class="progress-container">
                         <div class="progress-bar" id="progressBar"></div>
                     </div>
+                    <div id="stageProgress" class="stage-progress hidden"></div>
                     <div id="statusLinks" class="status-links"></div>
                 </div>
             `;
-            
+        
             const formSection = document.getElementById('formSection');
             if (formSection) {
                 formSection.appendChild(statusSection);
@@ -354,6 +357,10 @@ class CloudManagerApp {
         } else {
             statusSection.classList.remove('hidden');
             document.getElementById('statusText').innerText = message;
+            const stageStatus = document.getElementById('stageStatus');
+            if (stageStatus) stageStatus.classList.add('hidden');
+            const stageProgress = document.getElementById('stageProgress');
+            if (stageProgress) stageProgress.classList.add('hidden');
         }
     }
 
@@ -405,6 +412,8 @@ class CloudManagerApp {
     startStatusPolling(projectId, pipelineId) {
         const progressBar = document.getElementById('progressBar');
         const statusText = document.getElementById('statusText');
+        const stageStatus = document.getElementById('stageStatus');
+        const stageProgress = document.getElementById('stageProgress');
         
         // Clear any existing polling interval
         if (this.statusPollingInterval) {
@@ -441,6 +450,64 @@ class CloudManagerApp {
                         };
                         statusText.innerText = statusMessages[data.status] || `Статус: ${data.status}`;
                     }
+
+                    if (stageStatus) {
+                        if (data.running_stage) {
+                            stageStatus.innerText = `⚡ Сейчас выполняется: ${data.running_stage}`;
+                            stageStatus.classList.remove('hidden');
+                        } else if (typeof data.total_stages === 'number' && data.total_stages > 0) {
+                            stageStatus.innerText = `Готово этапов: ${data.completed_stages ?? 0} из ${data.total_stages}`;
+                            stageStatus.classList.remove('hidden');
+                        } else {
+                            stageStatus.classList.add('hidden');
+                        }
+                    }
+
+                    if (stageProgress) {
+                        if (Array.isArray(data.stages) && data.stages.length) {
+                            stageProgress.replaceChildren();
+                            data.stages.forEach(stage => {
+                                const safeStatus = ['pending', 'queued', 'running', 'completed', 'failed', 'canceled'].includes(stage.status)
+                                    ? stage.status
+                                    : 'pending';
+                                const safePercent = Number.isFinite(stage.percent)
+                                    ? Math.min(Math.max(stage.percent, 0), 100)
+                                    : 0;
+                                const stagePercent = `${safePercent}%`;
+                                const stageName = stage.name || this.unknownStageLabel;
+
+                                const stageRow = document.createElement('div');
+                                stageRow.className = 'stage-row';
+
+                                const stagePill = document.createElement('div');
+                                stagePill.className = `stage-pill stage-${safeStatus}`;
+
+                                const nameSpan = document.createElement('span');
+                                nameSpan.textContent = stageName;
+
+                                const percentSpan = document.createElement('span');
+                                percentSpan.textContent = stagePercent;
+
+                                stagePill.appendChild(nameSpan);
+                                stagePill.appendChild(percentSpan);
+
+                                const stageMeter = document.createElement('div');
+                                stageMeter.className = 'stage-meter';
+
+                                const meterFill = document.createElement('span');
+                                meterFill.style.width = stagePercent;
+
+                                stageMeter.appendChild(meterFill);
+                                stageRow.appendChild(stagePill);
+                                stageRow.appendChild(stageMeter);
+
+                                stageProgress.appendChild(stageRow);
+                            });
+                            stageProgress.classList.remove('hidden');
+                        } else {
+                            stageProgress.classList.add('hidden');
+                        }
+                    }
                     
                     // Stop polling when pipeline is complete
                     if (['success', 'failed', 'canceled', 'skipped'].includes(data.status)) {
@@ -456,6 +523,13 @@ class CloudManagerApp {
                                 progressBar.classList.add('progress-success');
                             } else if (data.status === 'failed') {
                                 progressBar.classList.add('progress-failed');
+                            }
+                        }
+                        if (stageStatus && Array.isArray(data.stages)) {
+                            const lastStage = data.stages.slice().reverse().find(stage => ['completed', 'failed', 'canceled'].includes(stage.status));
+                            if (lastStage) {
+                                stageStatus.innerText = `Готово! Последний этап: ${lastStage.name || this.unknownStageLabel}`;
+                                stageStatus.classList.remove('hidden');
                             }
                         }
                         return;
